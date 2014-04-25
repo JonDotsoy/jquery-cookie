@@ -1,5 +1,13 @@
 HEAD
 -----
+- Added support for CommonJS.
+
+- Added support for package managers: Jam (http://jamjs.org), volo (http://volojs.org), Component (http://component.io), jspm (http://jspm.io).
+
+- The expires option now interpretes fractions of numbers (e.g. days) correctly.
+
+1.4.0
+-----
 - Support for AMD.
 
 - Removed deprecated method `$.cookie('name', null)` for deleting a cookie,
@@ -8,6 +16,21 @@ HEAD
 - `$.cookie('name')` now returns `undefined` in case such cookie does not exist
   (was `null`). Because the return value is still falsy, testing for existence
   of a cookie like `if ( $.cookie('foo') )` keeps working without change.
+
+- Renamed bower package definition (component.json -> bower.json) for usage
+  with up-to-date bower.
+
+- Badly encoded cookies no longer throw exception upon reading but do return
+  undefined (similar to how we handle JSON parse errors with json = true).
+
+- Added conversion function as optional last argument for reading,
+  so that values can be changed to a different representation easily on the fly.
+  Useful for parsing numbers for instance:
+
+  ```javascript
+  $.cookie('foo', '42');
+  $.cookie('foo', Number); // => 42
+  ```
 
 1.3.1
 -----
