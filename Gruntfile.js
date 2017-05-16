@@ -1,5 +1,4 @@
-/*jshint node: true */
-
+/*jshint node:true, quotmark:single */
 'use strict';
 
 module.exports = function (grunt) {
@@ -7,16 +6,15 @@ module.exports = function (grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		qunit: {
-			all: ['test/index.html']
+			all: 'test/index.html'
 		},
 		jshint: {
-			files: [
-				'Gruntfile.js',
-				'jquery.cookie.js'
-			],
 			options: {
-				jshintrc: '.jshintrc'
-			}
+				jshintrc: true
+			},
+			grunt: 'Gruntfile.js',
+			source: 'src/**/*.js',
+			tests: 'test/**/*.js'
 		},
 		uglify: {
 			options: {
@@ -24,21 +22,21 @@ module.exports = function (grunt) {
 			},
 			build: {
 				files: {
-					'build/jquery.cookie-<%= pkg.version %>.min.js': 'jquery.cookie.js'
+					'build/jquery.cookie-<%= pkg.version %>.min.js': 'src/jquery.cookie.js'
 				}
 			}
 		},
 		watch: {
-			files: [
-				'jquery.cookie.js',
-				'test/tests.js'
-			],
+			options: {
+				livereload: true
+			},
+			files: '{src,test}/**/*.js',
 			tasks: 'default'
 		},
 		compare_size: {
 			files: [
 				'build/jquery.cookie-<%= pkg.version %>.min.js',
-				'jquery.cookie.js'
+				'src/jquery.cookie.js'
 			],
 			options: {
 				compress: {
@@ -49,41 +47,66 @@ module.exports = function (grunt) {
 			}
 		},
 		connect: {
-			server: {
+			saucelabs: {
 				options: {
-					base: '.',
-					directory: 'test',
-					port: 9999
+					port: 9999,
+					base: ['.', 'test']
+				}
+			},
+			tests: {
+				options: {
+					port: 9998,
+					base: ['.', 'test'],
+					open: 'http://127.0.0.1:9998',
+					keepalive: true,
+					livereload: true
 				}
 			}
 		},
 		'saucelabs-qunit': {
 			all: {
 				options: {
-					urls: ['http://127.0.0.1:9999/test/index.html'],
-					tunnelTimeout: 5,
+					urls: ['http://127.0.0.1:9999'],
 					build: process.env.TRAVIS_JOB_ID,
-					concurrency: 3,
 					browsers: [
+						// iOS
+						{
+							browserName: 'iphone',
+							platform: 'OS X 10.9',
+							version: '7.1'
+						},
+						{
+							browserName: 'ipad',
+							platform: 'OS X 10.9',
+							version: '7.1'
+						},
+						// Android
+						{
+							browserName: 'android',
+							platform: 'Linux',
+							version: '4.3'
+						},
+						// OS X
 						{
 							browserName: 'safari',
-							platform: 'OS X 10.8'
+							platform: 'OS X 10.9',
+							version: '7'
+						},
+						{
+							browserName: 'safari',
+							platform: 'OS X 10.8',
+							version: '6'
 						},
 						{
 							browserName: 'firefox',
-							platform: 'Windows 7'
+							platform: 'OS X 10.9',
+							version: '28'
 						},
+						// Windows
 						{
-							browserName: 'firefox',
-							platform: 'Windows XP'
-						},
-						{
-							browserName: 'firefox',
-							platform: 'Linux'
-						},
-						{
-							browserName: 'chrome',
-							platform: 'Windows 7'
+							browserName: 'internet explorer',
+							platform: 'Windows 8.1',
+							version: '11'
 						},
 						{
 							browserName: 'internet explorer',
@@ -93,10 +116,40 @@ module.exports = function (grunt) {
 						{
 							browserName: 'internet explorer',
 							platform: 'Windows 7',
+							version: '11'
+						},
+						{
+							browserName: 'internet explorer',
+							platform: 'Windows 7',
+							version: '10'
+						},
+						{
+							browserName: 'internet explorer',
+							platform: 'Windows 7',
 							version: '9'
+						},
+						{
+							browserName: 'internet explorer',
+							platform: 'Windows 7',
+							version: '8'
+						},
+						{
+							browserName: 'firefox',
+							platform: 'Windows 7',
+							version: '29'
+						},
+						{
+							browserName: 'chrome',
+							platform: 'Windows 7',
+							version: '34'
+						},
+						// Linux
+						{
+							browserName: 'firefox',
+							platform: 'Linux',
+							version: '29'
 						}
-					],
-					testname: 'jquery.cookie qunit tests'
+					]
 				}
 			}
 		}
@@ -110,6 +163,6 @@ module.exports = function (grunt) {
 	}
 
 	grunt.registerTask('default', ['jshint', 'qunit', 'uglify', 'compare_size']);
-	grunt.registerTask('saucelabs', ['connect', 'saucelabs-qunit']);
+	grunt.registerTask('saucelabs', ['connect:saucelabs', 'saucelabs-qunit']);
 	grunt.registerTask('ci', ['jshint', 'qunit', 'saucelabs']);
 };

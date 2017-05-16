@@ -14,7 +14,7 @@
 We use the following tools for development:
 
 - [Qunit](http://qunitjs.com/) for tests.
-- [NodeJS](http://nodejs.org/download/) required to run grunt and the test server only.
+- [NodeJS](http://nodejs.org/download/) required to run grunt.
 - [Grunt](http://gruntjs.com/getting-started) for task management.
 
 ###Getting started 
@@ -39,11 +39,9 @@ You should see a green message in the console:
 You can also run the tests in the browser.  
 Start a test server from the project root:
 
-    $ node test/server.js
+    $ grunt connect:tests
 
-Open the following URL in a browser:
-
-    $ open http://0.0.0.0:8124/test/index.html
+This will automatically open the test suite at http://127.0.0.1:9998 in the default browser, with livereload enabled.
 
 _Note: we recommend cleaning all the browser cookies before running the tests, that can avoid false positive failures._
 

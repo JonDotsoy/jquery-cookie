@@ -1,3 +1,11 @@
+// Required for exposing test results to the Sauce Labs API.
+// Can be removed when the following issue is fixed:
+// https://github.com/axemclion/grunt-saucelabs/issues/84
+QUnit.done(function (details) {
+	window.global_test_results = details;
+});
+
+
 var lifecycle = {
 	teardown: function () {
 		$.cookie.defaults = {};
@@ -186,11 +194,23 @@ test('number', function () {
 	strictEqual($.cookie('c'), '1234', 'should write value');
 });
 
+test('null', function () {
+	expect(1);
+	$.cookie('c', null);
+	strictEqual($.cookie('c'), 'null', 'should write value');
+});
+
+test('undefined', function () {
+	expect(1);
+	$.cookie('c', undefined);
+	strictEqual($.cookie('c'), 'undefined', 'should write value');
+});
+
 test('expires option as days from now', function () {
 	expect(1);
 	var sevenDaysFromNow = new Date();
-	sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
-	strictEqual($.cookie('c', 'v', { expires: 7 }), 'c=v; expires=' + sevenDaysFromNow.toUTCString(),
+	sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 21);
+	strictEqual($.cookie('c', 'v', { expires: 21 }), 'c=v; expires=' + sevenDaysFromNow.toUTCString(),
 		'should write the cookie string with expires');
 });
 
@@ -262,6 +282,11 @@ test('when sucessfully deleted', function () {
 	strictEqual($.removeCookie('c'), true, 'returns true');
 });
 
+test('when cookie does not exist', function () {
+	expect(1);
+	strictEqual($.removeCookie('c'), true, 'returns true');
+});
+
 test('when deletion failed', function () {
 	expect(1);
 	$.cookie('c', 'v');
@@ -277,11 +302,6 @@ test('when deletion failed', function () {
 	strictEqual($.removeCookie('c'), false, 'returns false');
 
 	$.cookie = originalCookie;
-});
-
-test('when cookie does not exist', function () {
-	expect(1);
-	strictEqual($.removeCookie('c'), false, 'returns false');
 });
 
 test('with options', function () {
